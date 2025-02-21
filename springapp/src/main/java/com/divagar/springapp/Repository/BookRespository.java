@@ -18,9 +18,10 @@ public interface BookRespository extends JpaRepository<Book,Integer>
 	List<Book> GetAllBook();
 	@Query("select b from Book b where b.id=?1")
 	Optional<Book> GetSingleBook(int id);
-
-	@Transactional
 	@Query("select b from Book b where b.title=?1")
 	Optional<Book> findByTitle(String title);
+	@Transactional
+	@Query("Delete from Book b where b.id=?1")
+	void DeleteSingleBook(int id);
 
 }
