@@ -67,7 +67,8 @@ public class BookController {
 
     @DeleteMapping("/book/delete/{id}")
     public ResponseEntity<Book> DeleteSingleBook(@PathVariable int id)
-    {Optional<Book> book =obj1.GetSingleBook(id);
+    {
+        Optional<Book> book =obj1.GetSingleBook(id);
         if(book.isPresent())
         {
             obj1.DeleteSingleBook(id);
