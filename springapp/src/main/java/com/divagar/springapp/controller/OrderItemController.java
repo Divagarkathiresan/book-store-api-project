@@ -65,4 +65,10 @@ public class OrderItemController {
 		}
 
 	}
+
+	@GetMapping("/sort/{field}")
+	public ResponseEntity<List<OrderItem>> getSortedFormat(@PathVariable String field)
+	{
+		return new ResponseEntity<>(orderitemService.getSortedFormat(field),HttpStatus.OK);
+	}
 }

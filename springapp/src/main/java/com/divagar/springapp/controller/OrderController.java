@@ -22,18 +22,13 @@ public class OrderController {
     public ResponseEntity<ordertable> AddNewOrder(@RequestBody ordertable o)
     {
         return new ResponseEntity<>(obj2.AddNewOrder(o),HttpStatus.OK);
-    }
-    
-    @GetMapping("/GET/orders")
+    }@GetMapping("/GET/orders")
     public ResponseEntity<List<ordertable>> GetAllOrders()
     {
         return new ResponseEntity<>(obj2.GetAllOrders(),HttpStatus.OK);
-    }
-
-    @GetMapping("/GET/orders/{id}")
+    }@GetMapping("/GET/orders/{id}")
     public ResponseEntity<ordertable> GetSingleOrder(@PathVariable int id)
-    {
-        Optional<ordertable> order = obj2.GetSingleOrder(id);
+    {Optional<ordertable> order = obj2.GetSingleOrder(id);
         if(order.isPresent())
         {
             return new ResponseEntity<>(order.get(),HttpStatus.OK);
@@ -42,11 +37,9 @@ public class OrderController {
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-    @PutMapping("/PUT/orders/{id}")
+    }@PutMapping("/PUT/orders/{id}")
     public ResponseEntity<ordertable> UpdateSingleOrder(@PathVariable int id,@RequestBody ordertable neworder)
-    {
-        Optional<ordertable> order = obj2.GetSingleOrder(id);
+    {Optional<ordertable> order = obj2.GetSingleOrder(id);
         if(order.isPresent())
         {
             return new ResponseEntity<>(obj2.UpdateSingleOrder(id,neworder),HttpStatus.OK);
@@ -55,12 +48,9 @@ public class OrderController {
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @DeleteMapping("/DELETE/orders/{id}")
+    }@DeleteMapping("/DELETE/orders/{id}")
     public ResponseEntity<ordertable> DeleteSingleOrder(@PathVariable int id)
-    {
-        Optional<ordertable> order = obj2.GetSingleOrder(id);
+    {Optional<ordertable> order = obj2.GetSingleOrder(id);
         if(order.isPresent())
         {
             obj2.DeleteSingleOrder(id);
