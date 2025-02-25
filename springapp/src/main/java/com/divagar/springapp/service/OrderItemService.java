@@ -31,6 +31,11 @@ public class OrderItemService {
 		return objOrderItem.findById(id);
 	}
 
+	public List<OrderItem> getSingleOrderItembyQuantity(int quantity)
+	{
+		return objOrderItem.findByQuantity(quantity);
+	}
+
 	public OrderItem updateSingleOrderItem(int id,OrderItem neworder)
 	{
 		return objOrderItem.findById(id)

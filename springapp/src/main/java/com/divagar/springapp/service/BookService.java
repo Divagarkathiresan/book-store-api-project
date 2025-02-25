@@ -33,6 +33,11 @@ public class BookService
 		return obj1.findById(id);
 	}
 
+	public Optional<Book> GetSingleBookByTitle(String title)
+	{
+		return obj1.findByTitle(title);
+	}
+
 	public Book UpdateSingleBook(int id,Book newbook)
 	{
 		return obj1.findById(id)

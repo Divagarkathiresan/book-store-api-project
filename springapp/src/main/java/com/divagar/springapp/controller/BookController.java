@@ -43,6 +43,12 @@ public class BookController {
         }
     }
 
+    @GetMapping("/book/get/title/{title}")
+    public ResponseEntity<Optional<Book>> GetSingleBookByTitle(@PathVariable String title)
+    {
+        return new ResponseEntity<>(obj1.GetSingleBookByTitle(title),HttpStatus.OK);
+    }
+
     @PutMapping("/book/put/id/{id}")
     public ResponseEntity<Book> UpdateSingleBook(@PathVariable int id,@RequestBody Book b)
     {

@@ -66,6 +66,14 @@ public class OrderItemController {
 
 	}
 
+
+	@GetMapping("/get/{quantity}")
+	public ResponseEntity<List<OrderItem>> getSingleOrderItembyQuantity(@PathVariable int quantity)
+	{
+		return new ResponseEntity<>(orderitemService.getSingleOrderItembyQuantity(quantity),HttpStatus.OK);
+	}
+
+
 	@GetMapping("/sort/{field}")
 	public ResponseEntity<List<OrderItem>> getSortedFormat(@PathVariable String field)
 	{

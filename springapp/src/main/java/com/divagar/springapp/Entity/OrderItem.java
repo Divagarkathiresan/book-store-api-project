@@ -7,7 +7,7 @@ public class OrderItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int orderItemID;
-	public int Quantity;
+	public int quantity;
 	public double subtotal;
 	public int getOrderItemID() {
 		return orderItemID;
@@ -16,10 +16,10 @@ public class OrderItem {
 		this.orderItemID = orderItemID;
 	}
 	public int getQuantity() {
-		return Quantity;
+		return quantity;
 	}
 	public void setQuantity(int quantity) {
-		this.Quantity = quantity;
+		this.quantity = quantity;
 	}
 	public double getSubtotal() {
 		return subtotal;
@@ -29,7 +29,7 @@ public class OrderItem {
 	}
 	public OrderItem(int orderItemID, int quantity, double subtotal) {
 		this.orderItemID = orderItemID;
-		this.Quantity = quantity;
+		this.quantity = quantity;
 		this.subtotal = subtotal;
 	}
 	public OrderItem() {
