@@ -2,36 +2,52 @@ package com.divagar.springapp.Entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "publisher")
 public class Publisher {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int PublisherID;
-	public String Name;
-	public String ContactNumber;
-	public int getPublisherID() {
-		return PublisherID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "publisherid")
+    private Long publisherId;
+
+    @Column(name = "name" , unique = true)
+    private String name;
+
+    @Column(name = "contactnumber")
+    private String contactNumber;
+
+	public Long getPublisherId() {
+		return publisherId;
 	}
-	public void setPublisherID(int publisherID) {
-		PublisherID = publisherID;
+
+	public void setPublisherId(Long publisherId) {
+		this.publisherId = publisherId;
 	}
+
 	public String getName() {
-		return Name;
+		return name;
 	}
+
 	public void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
+
 	public String getContactNumber() {
-		return ContactNumber;
+		return contactNumber;
 	}
+
 	public void setContactNumber(String contactNumber) {
-		ContactNumber = contactNumber;
+		this.contactNumber = contactNumber;
 	}
-	public Publisher(int publisherID, String name, String contactNumber) {
-		PublisherID = publisherID;
-		Name = name;
-		ContactNumber = contactNumber;
-	}
+
 	public Publisher() {
 	}
+
+	public Publisher(Long publisherId, String name, String contactNumber) {
+		this.publisherId = publisherId;
+		this.name = name;
+		this.contactNumber = contactNumber;
+	}
+
+	
 	
 }
