@@ -71,4 +71,10 @@ public class OrderItemController {
 	{
 		return new ResponseEntity<>(orderitemService.getSortedFormat(field),HttpStatus.OK);
 	}
+
+	@GetMapping("/page/{pagenumber}/{pagesize}")
+	public ResponseEntity<List<OrderItem>> getPaginationOrderItem(@PathVariable int pagenumber,@PathVariable int pagesize)
+	{
+		return new ResponseEntity<>(orderitemService.getPaginationOrderItem(pagenumber,pagesize),HttpStatus.OK);
+	}
 }
