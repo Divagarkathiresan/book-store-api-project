@@ -24,7 +24,14 @@ public class UserController
     @PostMapping("/POST/users")
     public ResponseEntity<user> Addnewuser(@RequestBody user a)
     {
-        return new ResponseEntity<>(obj.AddNewuser(a),HttpStatus.ACCEPTED);
+        String str = a.getEmail();
+        if( str.contains("@gmail.com"))
+        {
+            return new ResponseEntity<>(obj.AddNewuser(a),HttpStatus.ACCEPTED);
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    
     }
 
     @GetMapping("/GET/users")
