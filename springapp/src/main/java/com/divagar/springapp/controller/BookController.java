@@ -1,106 +1,87 @@
 package com.divagar.springapp.controller;
-import java.util.List;
-import java.util.Optional;
+import com.divagar.springapp.Entity.Book;
+import com.divagar.springapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Optional;
 
-import com.divagar.springapp.Entity.Book;
-import com.divagar.springapp.service.BookService;
 @RestController
-public class BookController {
+@RequestMapping("/books") // Base mapping for the controller
+public class BookController 
+{
+
     @Autowired
-    BookService obj1;
-    @PostMapping("/book/post")
-    public ResponseEntity<Book> AddNewBook(@RequestBody Book b)
-    {
-        return new ResponseEntity<>(obj1.AddNewBook(b),HttpStatus.OK);
-    } 
-    @GetMapping("/book/get")
-    public ResponseEntity<List<Book>> GetAllBook()
-    {
-        return new ResponseEntity<>(obj1.GetAllBook(),HttpStatus.OK);
+    private BookService bookService;
+
+    // Create a new book
+    @PostMapping("/add")
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
+        Book savedBook = bookService.addBook(book);
+        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
-    @GetMapping("/book/get/{id}")
-    public ResponseEntity<Book> GetSingleBook(@PathVariable int id)
-    {
-        Optional<Book> book = obj1.GetSingleBook(id);
-        if(book.isPresent())
-        {
-            return new ResponseEntity<>(book.get(),HttpStatus.OK);
+
+    // Get all books
+    @GetMapping("/all")
+    public ResponseEntity<List<Book>> getAllBooks() {
+        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    }
+
+    // Get a single book by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable int id) {
+        Optional<Book> book = bookService.getBookById(id);
+        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // Get a book by title
+    @GetMapping("/title/{title}")
+    public ResponseEntity<Book> getBookByTitle(@PathVariable String title) {
+        Optional<Book> book = bookService.getBookByTitle(title);
+        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // Update a book by ID
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable int id, @RequestBody Book updatedBook) {
+        Optional<Book> book = bookService.getBookById(id);
+        if (book.isPresent()) {
+            return new ResponseEntity<>(bookService.updateBook(id, updatedBook), HttpStatus.OK);
         }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    // Delete a book by ID
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable int id) {
+        Optional<Book> book = bookService.getBookById(id);
+        if (book.isPresent()) {
+            bookService.deleteBook(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/book/get/title/{title}")
-    public ResponseEntity<Optional<Book>> GetSingleBookByTitle(@PathVariable String title)
-    {
-        return new ResponseEntity<>(obj1.GetSingleBookByTitle(title),HttpStatus.OK);
+    // Sort books by a given field (e.g., title, price, author)
+    @GetMapping("/sort/{field}")
+    public ResponseEntity<List<Book>> sortBooks(@PathVariable String field) {
+        return new ResponseEntity<>(bookService.sortBooks(field), HttpStatus.OK);
     }
 
-    @PutMapping("/book/put/id/{id}")
-    public ResponseEntity<Book> UpdateSingleBook(@PathVariable int id,@RequestBody Book b)
-    {
-        Optional<Book> book = obj1.GetSingleBook(id);
-        if(book.isPresent())
-        {
-            return new ResponseEntity<>(obj1.UpdateSingleBook(id,b),HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);   
-        }
-
+    // Pagination of books
+    @GetMapping("/page/{pageSize}/{pageNumber}")
+    public ResponseEntity<List<Book>> paginateBooks(@PathVariable int pageSize, @PathVariable int pageNumber) {
+        return new ResponseEntity<>(bookService.paginateBooks(pageSize, pageNumber), HttpStatus.OK);
     }
 
-
-    @PutMapping("/book/put/title/{title}")
-    public Book updateSingleBookByTitle(@PathVariable String title, @RequestBody Book newBook) 
-    {
-        return obj1.updateBookByTitle(title, newBook);
-    }   
-
-    @DeleteMapping("/book/delete/{id}")
-    public ResponseEntity<Book> DeleteSingleBook(@PathVariable int id)
-    {
-        Optional<Book> book =obj1.GetSingleBook(id);
-        if(book.isPresent())
-        {
-            obj1.DeleteSingleBook(id);
-            return new ResponseEntity<>(book.get(),HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/book/sort/{field}")
-    public ResponseEntity<List<Book>> Sorting(@PathVariable String field)
-    {
-        return new ResponseEntity<>(obj1.Sorting(field),HttpStatus.OK);
-    }
-
-    @GetMapping("/book/page/{pagesize}/{pagenumber}")
-    public ResponseEntity<List<Book>> Pagination(@PathVariable int pagesize,@PathVariable int pagenumber)
-    {
-        return new ResponseEntity<>(obj1.Pagination(pagesize,pagenumber),HttpStatus.OK);
-    }
-
-    @GetMapping("/book/paginate/{pageSize}/{pageNumber}/{field}")
-    public ResponseEntity<List<Book>> getPaginatedAndSortedGardeners(@PathVariable int pageSize,@PathVariable int pageNumber,@PathVariable String field) 
-    {
-        return new ResponseEntity<>(obj1.getPaginatedAndSortedGardeners(pageNumber, pageSize, field),HttpStatus.OK);
+    // Pagination + Sorting
+    @GetMapping("/paginate/{pageSize}/{pageNumber}/{field}")
+    public ResponseEntity<List<Book>> paginateAndSortBooks(
+            @PathVariable int pageSize, @PathVariable int pageNumber, @PathVariable String field) {
+        return new ResponseEntity<>(bookService.paginateAndSortBooks(pageSize, pageNumber, field), HttpStatus.OK);
     }
 }

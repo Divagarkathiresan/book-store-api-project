@@ -1,41 +1,36 @@
 package com.divagar.springapp.Entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "ordertable")
-public class ordertable {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ordertable 
+{
     @Id
-    @Column(name="order_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public int id;
-    @Column(name="orderdate")
-    public String orderDate;
-    @Column(name="order_totalAmount")
-    public String totalAmount;
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getOrderDate() {
-        return orderDate;
-    }
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
-    }
-    public String getTotalAmount() {
-        return totalAmount;
-    }
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-    public ordertable(int id, String orderDate, String totalAmount) {
-        this.id = id;
-        this.orderDate = orderDate;
-        this.totalAmount = totalAmount;
-    }
-    public ordertable() {
-    }
-    
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed to IDENTITY for better DB handling
+    @Column(name = "order_id")
+    private int id;
+
+    @Column(name = "order_date", nullable = false)
+    private String orderDate;
+
+    @Column(name = "order_total_amount", nullable = false)
+    private double totalAmount; // Changed from String to double for numerical calculations
+
+
+    @ManyToOne
+    @JoinColumn(name = "book_id", nullable = false) // Foreign key reference to Book
+    @JsonBackReference
+    private Book book;
+
 }

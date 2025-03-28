@@ -1,97 +1,70 @@
 package com.divagar.springapp.controller;
+
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.divagar.springapp.Entity.user;
+import com.divagar.springapp.Entity.ordertable;
 import com.divagar.springapp.service.userService;
+import com.divagar.springapp.service.orderTableService;
+
 @RestController
-// @RequestMapping("/api")
-public class UserController 
-{
-    @Autowired
-    userService obj;
-    @PostMapping("/POST/users")
-    public ResponseEntity<user> Addnewuser(@RequestBody user a)
-    {
-        String str = a.getEmail();
-        if( str.contains("@gmail.com"))
-        {
-            return new ResponseEntity<>(obj.AddNewuser(a),HttpStatus.ACCEPTED);
-        }
-
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+@RequestMapping("/api")
+public class UserController {
     
-    }
+    @Autowired
+    private userService userService;
+    
+    @Autowired
+    private orderTableService orderService;
 
-    @GetMapping("/GET/users")
-    public ResponseEntity<List<user>> GetAlluser()
-    {
-        return new ResponseEntity<>(obj.GiveAlluser(),HttpStatus.OK);
-    }
-
-    @GetMapping("/GET/users/{id}")
-    public ResponseEntity<user> GetSingleuser(@PathVariable int id)
-    {
-        Optional<user> user = obj.GiveSingleuser(id);
-        if(user.isPresent())
-        {
-            return new ResponseEntity<>(user.get(),HttpStatus.OK);
+    @PostMapping("/users")
+    public ResponseEntity<?> addNewUser(@RequestBody user user) {
+        if (user.getEmail().contains("@gmail.com")) {
+            return new ResponseEntity<>(userService.AddNewuser(user), HttpStatus.CREATED);
         }
-        else
-        {
+        return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<user>> getAllUsers() {
+        return new ResponseEntity<>(userService.GiveAlluser(), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<user> getSingleUser(@PathVariable int id) {
+        Optional<user> user = userService.GiveSingleuser(id);
+        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<user> updateSingleUser(@PathVariable int id, @RequestBody user updatedUser) {
+        try {
+            return new ResponseEntity<>(userService.Updateuser(id, updatedUser), HttpStatus.OK);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/PUT/users/{id}")
-    public ResponseEntity<user> UpdateSingleuser(@PathVariable int id,@RequestBody user a)
-    {
-        Optional<user> user = obj.GiveSingleuser(id);
-        if(user.isPresent())
-        {
-            return new ResponseEntity<>(obj.Updateuser(id, a),HttpStatus.OK);
-        }
-        else
-        {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteSingleUser(@PathVariable int id) {
+        try {
+            userService.Deleteuser(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @DeleteMapping("/DELETE/users/{id}")
-    public ResponseEntity<user> DeleteSingleuser(@PathVariable int id)
-    {
-        Optional<user> user = obj.GiveSingleuser(id);
-        if(user.isPresent())
-        {
-            obj.Deleteuser(id);
-            return new ResponseEntity<>(user.get(),HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/SORT/users/{field}")
-    public ResponseEntity<List<user>> Sorting(@PathVariable String field)
-    {
-        return new ResponseEntity<>(obj.Sorting(field),HttpStatus.OK);
-    }
-
-    @GetMapping("/PAGE/users/{pagenumber}/{pagesize}")
-    public ResponseEntity<List<user>> Pagination(@PathVariable int pagenumber , @PathVariable int pagesize)
-    {
-        return new ResponseEntity<>(obj.Pagination(pagenumber,pagesize),HttpStatus.OK);
+    
+    
+    @GetMapping("/users/page/{pageNumber}/{pageSize}")
+    public ResponseEntity<List<user>> paginateUsers(@PathVariable int pageNumber, @PathVariable int pageSize) {
+        return new ResponseEntity<>(userService.Pagination(pageNumber, pageSize), HttpStatus.OK);
     }
 }

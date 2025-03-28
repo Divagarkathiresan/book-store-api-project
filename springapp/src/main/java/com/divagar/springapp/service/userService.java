@@ -26,7 +26,7 @@ public class userService {
     }
 
     public Optional<user> GiveSingleuser(int id)
-    {
+    {   
         return obj.findById(id);
     }
 

@@ -9,6 +9,7 @@ public class OrderItem {
 	public int orderItemID;
 	public int quantity;
 	public double subtotal;
+
 	public int getOrderItemID() {
 		return orderItemID;
 	}

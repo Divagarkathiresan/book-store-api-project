@@ -1,124 +1,74 @@
 package com.divagar.springapp.service;
-import java.util.List;
-import java.util.Optional;
+
+import com.divagar.springapp.Entity.Book;
+import com.divagar.springapp.Repository.BookRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.service.annotation.PatchExchange;
 
-import com.divagar.springapp.Entity.Book;
-import com.divagar.springapp.Repository.BookRespository;
+import java.util.List;
+import java.util.Optional;
+
 @Service
-public class BookService 
-{
+public class BookService {
+
     @Autowired
-    BookRespository obj1;
+    BookRespository bookRepository;
 
-	public Book AddNewBook(Book b)
-	{
-		return obj1.save(b);
-	}
-
-	public List<Book> GetAllBook()
-	{
-		return obj1.findAll();
-	}
-
-	public Optional<Book> GetSingleBook(int id)
-	{
-		return obj1.findById(id);
-	}
-
-	public Optional<Book> GetSingleBookByTitle(String title)
-	{
-		return obj1.findByTitle(title);
-	}
-
-	public Book UpdateSingleBook(int id,Book newbook)
-	{
-		return obj1.findById(id)
-		.map(e->
-		{
-			if(newbook.getTitle()!=null)
-			{
-				e.setTitle(newbook.getTitle());
-			}
-			if(newbook.getGenre() != null)
-			{
-				e.setGenre(newbook.getGenre());
-			}
-			if(newbook.getPrice() != null)
-			{
-				e.setPrice(newbook.getPrice());
-			}
-			if(newbook.getDescription() != null)
-			{
-				e.setDescription(newbook.getDescription());
-			}
-			if(newbook.getEbook() != true ||newbook.getEbook() != false)
-			{
-				e.setEbook(newbook.getEbook());
-			}
-			return obj1.save(e);
-		}).orElseThrow(()-> new RuntimeException ("The id is not valid"));
-	}
-
-	public void DeleteSingleBook(int id)
-	{
-		if(obj1.existsById(id))
-		{
-			obj1.deleteById(id);
-		}
-		else
-		{
-			throw new RuntimeException( "Id is not found");
-		}
-	}
-
-	public Book updateBookByTitle(String title, Book newBook) 
-	{
-        return obj1.findByTitle(title)
-                .map(existingBook -> 
-				{
-                    if (newBook.getTitle() != null) {
-                        existingBook.setTitle(newBook.getTitle());
-                    }
-                    if (newBook.getGenre() != null) {
-                        existingBook.setGenre(newBook.getGenre());
-                    }
-                    if (newBook.getPrice() != null) {
-                        existingBook.setPrice(newBook.getPrice());
-                    }
-                    if (newBook.getDescription() != null) {
-                        existingBook.setDescription(newBook.getDescription());
-                    }
-                    if (newBook.getEbook() != true || newBook.getEbook() != false) {  // Proper boolean check
-                        existingBook.setEbook(newBook.getEbook());
-                    }
-                    return obj1.save(existingBook);
-                })
-                .orElseThrow(() -> new RuntimeException("The title is not valid"));
+    // Add a new book
+    public Book addBook(Book book) {
+        return bookRepository.save(book);
     }
 
-	public List<Book> Sorting(String field)
-    {
-        Sort sort = Sort.by(Sort.Direction.DESC,field);
-        return obj1.findAll(sort);
+    // Get all books
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 
-    public List<Book> Pagination(int pagesize,int pagenumber)
-    {
-        Pageable page = PageRequest.of(pagenumber,pagesize);
-        return obj1.findAll(page).getContent();
+    // Get a book by ID
+    public Optional<Book> getBookById(int id) {
+        return bookRepository.findById(id);
     }
 
-	public List<Book> getPaginatedAndSortedGardeners(int pageNumber, int pageSize, String field) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, field));
-        return obj1.findAll(pageable).getContent();
+    // Get a book by title
+    public Optional<Book> getBookByTitle(String title) {
+        return bookRepository.findByTitle(title);
     }
 
+    // Update a book by ID
+    public Book updateBook(int id, Book updatedBook) {
+        return bookRepository.findById(id).map(existingBook -> {
+            existingBook.setTitle(updatedBook.getTitle());
+            existingBook.setGenre(updatedBook.getGenre());
+            existingBook.setAuthor(updatedBook.getAuthor());
+            existingBook.setDescription(updatedBook.getDescription());
+            existingBook.setPrice(updatedBook.getPrice());
+            existingBook.setEbook(updatedBook.isEbook());
+            return bookRepository.save(existingBook);
+        }).orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+    }
+
+    // Delete a book by ID
+    public void deleteBook(int id) {
+        bookRepository.deleteById(id);
+    }
+
+    // Sort books by a given field
+    public List<Book> sortBooks(String field) {
+        return bookRepository.findAll(Sort.by(Sort.Direction.ASC, field));
+    }
+
+    // Pagination of books
+    public List<Book> paginateBooks(int pageSize, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return bookRepository.findAll(pageable).getContent();
+    }
+
+    // Pagination + Sorting
+    public List<Book> paginateAndSortBooks(int pageSize, int pageNumber, String field) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, field));
+        return bookRepository.findAll(pageable).getContent();
+    }
 }
